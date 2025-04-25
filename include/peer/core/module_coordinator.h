@@ -4,10 +4,12 @@
 
 #pragma once
 
-#include <memory>
 #include <atomic>
+#include <memory>
 #include <thread>
+
 #include "common/async_serial_executor.h"
+#include "peer/concurrency_control/my_cc/serial/coordinator_impl.h"
 #include "peer/db/db_interface.h"
 
 namespace util {
@@ -44,6 +46,7 @@ namespace peer::core {
         using ChaincodeType = peer::cc::CoordinatorImpl;
         // Uncomment this line to enable serial exec chaincode
         // using ChaincodeType = peer::cc::serial::SerialCoordinator;
+        // using ChaincodeType = peer::cc::mycc::serial::SerialCoordinator;
 
         static std::unique_ptr<ModuleCoordinator> NewModuleCoordinator(const std::shared_ptr<util::Properties>& properties);
 

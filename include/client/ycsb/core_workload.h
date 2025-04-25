@@ -29,12 +29,12 @@ namespace client::ycsb {
     using YCSBDiscreteGenerator = core::DiscreteGenerator<Operation>;
 
     class CoreWorkload: public core::Workload {
-        std::unique_ptr<core::NumberGenerator> keySequence;
-        std::unique_ptr<YCSBDiscreteGenerator> operationChooser;
-        std::unique_ptr<core::NumberGenerator> keyChooser;
-        std::unique_ptr<core::NumberGenerator> fieldChooser;
-        std::unique_ptr<core::AcknowledgedCounterGenerator> transactionInsertKeySequence;
-        std::unique_ptr<core::NumberGenerator> scanLength;
+        std::unique_ptr<core::NumberGenerator> keySequence;       // return monotonically increase
+        std::unique_ptr<YCSBDiscreteGenerator> operationChooser;  // return random operation
+        std::unique_ptr<core::NumberGenerator> keyChooser;        // return random key(number) via specialized distribution(by configuration file)
+        std::unique_ptr<core::NumberGenerator> fieldChooser;      // return random field(number) via uniform distribution
+        std::unique_ptr<core::AcknowledgedCounterGenerator> transactionInsertKeySequence;   // using for insert and generate a legal random key number
+        std::unique_ptr<core::NumberGenerator> scanLength;        // return random scan length(number)
         int insertStart, insertCount;
         bool orderedInserts, dataIntegrity;
         uint64_t fieldCount, recordCount;
@@ -122,6 +122,7 @@ namespace client::ycsb {
          * this function must be thread safe. However, avoid synchronized, or the threads will block waiting
          * for each other, and it will be difficult to reach the target throughput. Ideally, this function would
          * have no side effects other than DB operations.
+         * using for initial database(on peer initial chaincode stage, using write_though_db)
          */
         bool doInsert(core::DB* db) const override {
             auto keyNum = keySequence->nextValue();
@@ -155,6 +156,7 @@ namespace client::ycsb {
          * threads, this function must be thread safe. However, avoid synchronized, or the threads will block waiting
          * for each other, and it will be difficult to reach the target throughput. Ideally, this function would
          * have no side effects other than DB operations.
+         * using for benchmark(call by client thread, using neuchain_db)
          */
         bool doTransaction(core::DB* db) const override {
             auto operation = operationChooser->nextValue();
