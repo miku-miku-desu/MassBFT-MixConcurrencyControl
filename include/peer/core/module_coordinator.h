@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "common/async_serial_executor.h"
+#include "peer/concurrency_control/my_cc/deterministic/coordinator_impl.h"
 #include "peer/concurrency_control/my_cc/serial/coordinator_impl.h"
 #include "peer/db/db_interface.h"
 
@@ -47,6 +48,7 @@ namespace peer::core {
         // Uncomment this line to enable serial exec chaincode
         // using ChaincodeType = peer::cc::serial::SerialCoordinator;
         // using ChaincodeType = peer::cc::mycc::serial::SerialCoordinator;
+        // using ChaincodeType = peer::cc::mycc::deterministic::DeterministicCoordinator;
 
         static std::unique_ptr<ModuleCoordinator> NewModuleCoordinator(const std::shared_ptr<util::Properties>& properties);
 
