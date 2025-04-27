@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include "client/core/workload.h"
-#include "client/core/db.h"
-#include "client/core/status.h"
-#include "client/core/generator/discrete_generator.h"
+#include "client/core/common/normal_unint64.h"
 #include "client/core/common/random_uint64.h"
-#include "client/core/common/random_double.h"
+#include "client/core/db.h"
+#include "client/core/generator/discrete_generator.h"
+#include "client/core/status.h"
+#include "client/core/workload.h"
 #include "client/crdt/crdt_property.h"
 
 namespace client::crdt {
@@ -19,7 +19,10 @@ namespace client::crdt {
 
         void init(const ::util::Properties& prop) override {
             auto n = CrdtProperties::NewFromProperty(prop);
-            votingCandidateChooser = std::make_unique<utils::RandomUINT64>(0, n->getCandidateCount());
+            // uncomment next line to use uniform number generator
+            // votingCandidateChooser = std::make_unique<utils::RandomUINT64>(0, n->getCandidateCount());
+            // uncomment next line to use normal distribution generator
+            votingCandidateChooser = client::utils::NornamlUINT64::NewNormalUINT64(0, n->getCandidateCount());
             votesChooser = std::make_unique<utils::RandomUINT64>(0, 10);
         }
 
@@ -51,7 +54,8 @@ namespace client::crdt {
         }
 
     private:
-        std::unique_ptr<utils::RandomUINT64> votingCandidateChooser;
+        // std::unique_ptr<utils::RandomUINT64> votingCandidateChooser;
+        std::unique_ptr<client::core::NumberGenerator> votingCandidateChooser;
         std::unique_ptr<utils::RandomUINT64> votesChooser;
     };
 }

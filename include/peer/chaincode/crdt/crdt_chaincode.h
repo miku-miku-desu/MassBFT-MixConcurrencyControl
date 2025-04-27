@@ -31,4 +31,5 @@ namespace peer::crdt::chaincode {
     };
 
     std::unique_ptr<CrdtChaincode> NewChaincodeByName(std::string_view ccName, std::unique_ptr<CrdtORM> orm);
+    bool isCrdtChainCode(std::string_view ccName);
 }

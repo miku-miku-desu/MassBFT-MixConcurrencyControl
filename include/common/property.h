@@ -227,6 +227,8 @@ namespace util {
         constexpr static const auto ARIA_WORKER_COUNT = "aria_worker_count";
         constexpr static const auto BCCSP_WORKER_COUNT = "bccsp_worker_count";
 
+        constexpr static const auto USE_MIX_CONCURRENCY_CONTROL = "mix_cc";
+
     public:
         // Load from file, if fileName is null, create an empty property
         static bool LoadProperties(const std::string& fileName = {});
@@ -351,6 +353,15 @@ namespace util {
                 LOG(INFO) << "Can not find BATCH_MAX_SIZE, leave it to 200.";
             }
             return 200; // 200 size
+        }
+
+        bool usingMixConcurrencyControl() const {
+          try {
+            return _node[USE_MIX_CONCURRENCY_CONTROL].as<bool>();
+          } catch (const YAML::Exception &e) {
+            LOG(ERROR) << "Can not find USE_MIX_CONCURRENCY_CONTROL, default false";
+          }
+          return false;
         }
 
         int getAriaWorkerCount() const;

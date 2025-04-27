@@ -34,7 +34,7 @@ public:
     }
 
     bool initDB(const std::string& ccName) {
-        if (_mc->initChaincodeData(ccName)) {
+        if (_mc->initChaincodeData(ccName)) {       // vote chaincode will init with non crdt chaincode
             return true;
         }
         if (_mc->initCrdtChaincodeData(ccName)) {

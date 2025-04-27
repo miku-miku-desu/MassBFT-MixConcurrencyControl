@@ -13,4 +13,12 @@ namespace peer::crdt::chaincode {
         }
         return nullptr;
     }
+
+    bool isCrdtChainCode(std::string_view ccName) {
+      if (client::crdt::StaticConfig::VOTING_CHAINCODE_NAME == ccName) {
+        return true;
+      }
+      return false;
+    }
+
 }
