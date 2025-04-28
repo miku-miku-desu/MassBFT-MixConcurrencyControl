@@ -20,9 +20,9 @@ namespace client::crdt {
         void init(const ::util::Properties& prop) override {
             auto n = CrdtProperties::NewFromProperty(prop);
             // uncomment next line to use uniform number generator
-            // votingCandidateChooser = std::make_unique<utils::RandomUINT64>(0, n->getCandidateCount());
+            // votingCandidateChooser = std::make_unique<utils::RandomUINT64>(0, n->getCandidateCount() - 1);
             // uncomment next line to use normal distribution generator
-            votingCandidateChooser = client::utils::NornamlUINT64::NewNormalUINT64(0, n->getCandidateCount());
+            votingCandidateChooser = client::utils::NornamlUINT64::NewNormalUINT64(0, n->getCandidateCount() - 1);
             votesChooser = std::make_unique<utils::RandomUINT64>(0, 10);
         }
 

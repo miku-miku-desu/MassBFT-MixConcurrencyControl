@@ -66,7 +66,7 @@ namespace peer::cc::mycc::mix {
         }
       }
 
-      LOG(INFO) << "process deterministic txn: " << deterministicTxn.size() << " crdt txn: " << crdtTxn.size();
+      // LOG(INFO) << "process deterministic txn: " << deterministicTxn.size() << " crdt txn: " << crdtTxn.size();
 
       // using each type coordinator to process txn
       if (!crdt->processValidatedRequests(crdtTxn)) {
