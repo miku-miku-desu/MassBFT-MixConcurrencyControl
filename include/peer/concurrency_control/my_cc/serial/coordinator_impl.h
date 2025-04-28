@@ -2,14 +2,11 @@
 // Created by miku on 25-4-21.
 //
 
-#ifndef COORDINATOR_IMPL_H
-#  define COORDINATOR_IMPL_H
-#  include <braft/fsm_caller.h>
+#pragma once
 
 #  include "peer/chaincode/chaincode.h"
 #  include "peer/concurrency_control/coordinator.h"
 
-#endif //COORDINATOR_IMPL_H
 
 
 namespace peer::cc::mycc::serial {

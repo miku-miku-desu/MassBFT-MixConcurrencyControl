@@ -2,8 +2,8 @@
 // Created by miku on 25-4-26.
 //
 
-#ifndef WORKER_FSM_IMPL_H
-#  define WORKER_FSM_IMPL_H
+#pragma once
+
 #  include <braft/fsm_caller.h>
 
 #  include "peer/chaincode/chaincode.h"
@@ -11,7 +11,6 @@
 #  include "proto/transaction.h"
 #  include "reserve_table.h"
 
-#endif //WORKER_FSM_IMPL_H
 
 
 namespace peer::cc::mycc::deterministic {
@@ -30,6 +29,7 @@ namespace peer::cc::mycc::deterministic {
     ReceiverState OnExecuteTransaction() override {
       DCHECK(dbc != nullptr && reserveTable != nullptr);
       for (auto& txn : txnList) {
+        if (txn == nullptr) continue;   // mix concurrency result txnList not full
         auto& userRequest = txn->getUserRequest();
         auto ccName = userRequest.getCCNameSV();
         auto cc = getOrCreateChaincode(ccName);
@@ -51,6 +51,7 @@ namespace peer::cc::mycc::deterministic {
     ReceiverState OnCommitTransaction() override {
       auto saveToDB = [&](db::PHMapConnection::WriteBatch* batch) {
         for (auto& txn : txnList) {
+          if (txn == nullptr) continue;   // mix concurrency result txnList not full
           auto result = txn->getExecutionResult();
           if (result == proto::Transaction::ExecutionResult::ABORT_NO_RETRY) {
             continue;

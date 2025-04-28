@@ -2,11 +2,13 @@
 // Created by peng on 11/6/22.
 //
 
-#include "peer/core/module_coordinator.h"
-#include "common/property.h"
-#include "common/crypto.h"
-#include "common/reliable_zeromq.h"
+#include <ranges>
+
 #include "common/cmd_arg_parser.h"
+#include "common/crypto.h"
+#include "common/property.h"
+#include "common/reliable_zeromq.h"
+#include "peer/core/module_coordinator.h"
 
 class PeerInstance {
 public:
@@ -68,6 +70,22 @@ void OverrideLocalNodeInfo(const util::ArgParser& argParser) {
     n.setLocalNodeInfo(localNode->groupId, localNode->nodeId);
 }
 
+std::vector<std::string_view> split(std::string_view str, char delimiter) {
+  std::vector<std::string_view> result;
+
+  size_t start = 0;
+  size_t end = str.find(delimiter);
+
+  while (end != std::string_view::npos) {
+    result.push_back(str.substr(start, end - start));
+    start = end + 1;
+    end = str.find(delimiter, start);
+  }
+
+  result.push_back(str.substr(start));
+  return result;
+}
+
 /*
  * Usage:
  *  default: transaction mode.
@@ -87,9 +105,13 @@ int main(int argc, char *argv[]) {
     }
     // init database
     if (auto ccName = argParser.getOption("-i"); ccName != std::nullopt) {
-        LOG(INFO) << "Init db for chaincode: " << *ccName << " .";
-        if (!peer.initDB(*ccName)) {
+
+        auto ccNames = split(*ccName, '.');
+        for (auto& cc : ccNames) {
+          LOG(INFO) << "Init db for chaincode: " << cc << " .";
+          if (!peer.initDB(std::string(cc))) {
             return -1;
+          }
         }
         LOG(INFO) << "Init db for chaincode: " << *ccName << " completed.";
         if (!peer::db::IsDBHashMap()) {

@@ -2,14 +2,13 @@
 // Created by miku on 25-4-26.
 //
 
-#ifndef SIMPLE_VOTE_CHAINCODE_H
-#  define SIMPLE_VOTE_CHAINCODE_H
+#pragma once
+
 #  include "chaincode.h"
 #  include "client/core/generator/generator.h"
 #  include "client/crdt/crdt_property.h"
 #  include "common/property.h"
 
-#endif  // SIMPLE_VOTE_CHAINCODE_H
 
 namespace peer::chaincode {
   // transplant from crdt chaincode

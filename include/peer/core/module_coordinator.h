@@ -9,9 +9,10 @@
 #include <thread>
 
 #include "common/async_serial_executor.h"
-#include "peer/concurrency_control/my_cc/deterministic/coordinator_impl.h"
-#include "peer/concurrency_control/my_cc/serial/coordinator_impl.h"
 #include "peer/concurrency_control/my_cc/crdt/coordinator_impl.h"
+#include "peer/concurrency_control/my_cc/deterministic/coordinator_impl.h"
+#include "peer/concurrency_control/my_cc/mix/coordinator_impl.h"
+#include "peer/concurrency_control/my_cc/serial/coordinator_impl.h"
 #include "peer/db/db_interface.h"
 
 namespace util {
@@ -51,6 +52,7 @@ namespace peer::core {
         // using ChaincodeType = peer::cc::mycc::serial::SerialCoordinator;
         // using ChaincodeType = peer::cc::mycc::deterministic::DeterministicCoordinator;
         // using ChaincodeType = peer::cc::crdt::mycrdt::CrdtCoordinator;
+        // using ChaincodeType = peer::cc::mycc::mix::MixCoordinator;
 
         static std::unique_ptr<ModuleCoordinator> NewModuleCoordinator(const std::shared_ptr<util::Properties>& properties);
 

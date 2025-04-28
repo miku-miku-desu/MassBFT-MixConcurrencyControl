@@ -2,14 +2,11 @@
 // Created by miku on 25-4-26.
 //
 
-#ifndef RESERVE_TABLE_H
-#  define RESERVE_TABLE_H
-#  include <google/protobuf/stubs/mutex.h>
+#pragma once
 
 #  include "common/phmap.h"
 #  include "proto/transaction.h"
 
-#endif //RESERVE_TABLE_H
 
 
 namespace peer::cc::mycc::deterministic {

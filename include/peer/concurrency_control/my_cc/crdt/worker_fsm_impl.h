@@ -23,6 +23,7 @@ namespace peer::cc::crdt::mycrdt {
 
     ReceiverState OnExecuteTransaction() override {
       for (auto& txn : txnList) {
+        if (txn == nullptr) continue;   // mix concurrency result txnList not full
         auto& userRequest = txn->getUserRequest();
         auto ccName = userRequest.getCCNameSV();
         auto cc = getOrCreateChaincode(ccName);

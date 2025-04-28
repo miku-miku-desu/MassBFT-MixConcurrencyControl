@@ -2,13 +2,11 @@
 // Created by miku on 25-4-27.
 //
 
-#ifndef NORMAL_UNINT64_H
-#  define NORMAL_UNINT64_H
-#  include <memory>
+#pragma once
 
+#  include <memory>
 #  include "client/core/generator/generator.h"
 
-#endif //NORMAL_UNINT64_H
 
 
 namespace client::utils {

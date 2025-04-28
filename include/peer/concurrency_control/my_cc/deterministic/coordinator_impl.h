@@ -2,12 +2,12 @@
 // Created by miku on 25-4-26.
 //
 
-#ifndef COORDINATOR_IMPL_H
+#pragma once
+
 #  define COORDINATOR_IMPL_H
 #  include "peer/concurrency_control/coordinator.h"
 #  include "worker_fsm_impl.h"
 
-#endif //COORDINATOR_IMPL_H
 
 
 namespace peer::cc::mycc::deterministic {
@@ -22,6 +22,31 @@ namespace peer::cc::mycc::deterministic {
         it->setReserveTable(table);
       }
       return true;
+    }
+
+    bool processValidatedRequests(std::vector<std::unique_ptr<proto::Transaction>>& transactions) {
+      const auto workerCount = this->workerList.size();
+
+      auto afterStart = [&](const auto& worker, auto& fsm) {
+        auto& fsmTxnList = fsm.getMutableTxnList();
+        fsmTxnList.clear();
+        fsmTxnList.reserve(transactions.size() / workerCount + 1);
+        for (int i = worker.getId(); i < (int)transactions.size(); i += workerCount) {
+          fsmTxnList.push_back(std::move(transactions[i]));
+        }
+      };
+
+      auto afterCommit = [&](const auto& worker, auto& fsm) {
+        auto& fsmTxnList = fsm.getMutableTxnList();
+        auto id = worker.getId();
+        for (int i = id, j = 0; i < (int)transactions.size(); i+= workerCount) {
+          auto& txn = fsmTxnList[j++];
+          CHECK(txn != nullptr) << "unknown nullptr txn";
+          transactions[i] = std::move(txn);
+        }
+      };
+
+      return this->processSync(afterStart, afterCommit);
     }
 
     bool processSync(const auto& afterStart, const auto& afterCommit) {
