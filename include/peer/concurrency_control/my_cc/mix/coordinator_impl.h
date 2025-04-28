@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "common/property.h"
 #include "peer/concurrency_control/coordinator.h"
 #include "peer/concurrency_control/my_cc/crdt/coordinator_impl.h"
 #include "peer/concurrency_control/my_cc/deterministic/coordinator_impl.h"
@@ -30,9 +31,16 @@ namespace peer::cc::mycc::mix {
   class MixCoordinator : public Coordinator<MixWorkerFSM, MixCoordinator> {
   public:
     bool init(std::shared_ptr<db::DBConnection> db) {
-      int workerCount = this->workerList.size();
+      int workerCount = (int)this->workerList.size();
+      auto p = util::Properties::GetProperties();
       deterministic = deterministic::DeterministicCoordinator::NewCoordinator(db, workerCount);
-      crdt = crdt::mycrdt::CrdtCoordinator::NewCoordinator(db, workerCount);
+      if (p->usingMixConcurrencyControl()) {
+        LOG(INFO) << "Using mix concurrency control system";
+        crdt = crdt::mycrdt::CrdtCoordinator::NewCoordinator(db, workerCount);
+        enableMix = true;
+      } else {
+        LOG(INFO) << "Mix concurrency control system disable";
+      }
       return true;
     }
 
@@ -41,6 +49,9 @@ namespace peer::cc::mycc::mix {
     }
 
     bool processValidatedRequests(std::vector<std::unique_ptr<proto::Envelop>>& requests, std::vector<std::unique_ptr<proto::TxReadWriteSet>>& retRWSets, std::vector<std::byte>& retResults) override {
+      if (!enableMix) {
+        return deterministic->processValidatedRequests(requests, retRWSets, retResults);
+      }
       auto requestCount = requests.size();
 
       deterministicTxn.clear();
@@ -111,5 +122,6 @@ namespace peer::cc::mycc::mix {
     std::vector<std::unique_ptr<proto::Transaction>> deterministicTxn;
     std::vector<std::unique_ptr<proto::Transaction>> crdtTxn;
     std::vector<bool> isCrdtTxn;
+    bool enableMix{};
   };
 }

@@ -46,13 +46,13 @@ namespace peer::core {
         // Uncomment this line to enable CRDT chaincode
         // using ChaincodeType = peer::cc::crdt::CRDTCoordinator;
         // Uncomment this line to enable traditional chaincode
-        using ChaincodeType = peer::cc::CoordinatorImpl;
+        // using ChaincodeType = peer::cc::CoordinatorImpl;
         // Uncomment this line to enable serial exec chaincode
         // using ChaincodeType = peer::cc::serial::SerialCoordinator;
         // using ChaincodeType = peer::cc::mycc::serial::SerialCoordinator;
         // using ChaincodeType = peer::cc::mycc::deterministic::DeterministicCoordinator;
         // using ChaincodeType = peer::cc::crdt::mycrdt::CrdtCoordinator;
-        // using ChaincodeType = peer::cc::mycc::mix::MixCoordinator;
+        using ChaincodeType = peer::cc::mycc::mix::MixCoordinator;
 
         static std::unique_ptr<ModuleCoordinator> NewModuleCoordinator(const std::shared_ptr<util::Properties>& properties);
 

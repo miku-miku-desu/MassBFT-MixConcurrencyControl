@@ -29,9 +29,9 @@ namespace client::core {
                 factory = std::make_unique<core::DBFactory>(n);
             }
             workload = Derived::CreateWorkload(n);
-            workload->init(n);
             measurements = std::make_shared<core::Measurements>();
             workload->setMeasurements(measurements);
+            workload->init(n);    // make sure init after set measurements
             properties = Derived::CreateProperty(n);
             initClients();
         }

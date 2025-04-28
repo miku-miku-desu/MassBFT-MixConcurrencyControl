@@ -68,6 +68,16 @@ set_target_properties(${PROJECT_NAME}_crdt PROPERTIES CXX_STANDARD 20 OUTPUT_NAM
 
 target_link_libraries(${PROJECT_NAME}_crdt NBP cxxopts ${COMMON_DEPENDENCIES})
 
+# ---- Create mix standalone executable ----
+
+file(GLOB mix_sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/client/mix/*.cpp)
+
+add_executable(${PROJECT_NAME}_mix ${mix_sources})
+
+set_target_properties(${PROJECT_NAME}_mix PROPERTIES CXX_STANDARD 20 OUTPUT_NAME "mix")
+
+target_link_libraries(${PROJECT_NAME}_mix NBP cxxopts ${COMMON_DEPENDENCIES})
+
 # ---- Create pension standalone executable ----
 
 file(GLOB pension_headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/client/pension_demo/*.h")

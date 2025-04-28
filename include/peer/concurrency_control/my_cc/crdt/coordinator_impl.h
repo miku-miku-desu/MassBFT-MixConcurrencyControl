@@ -22,6 +22,8 @@ namespace peer::cc::crdt::mycrdt {
       return true;
     }
 
+    using Coordinator::processValidatedRequests;
+
     bool processValidatedRequests(std::vector<std::unique_ptr<proto::Transaction>>& transactions) {
       const auto workerCount = this->workerList.size();
 
