@@ -3,19 +3,18 @@
 //
 # pragma once
 
-#include "peer/chaincode/crdt/pncounter.h"
-#include "peer/concurrency_control/coordinator.h"
-#include "peer/db/db_interface.h"
-#include "worker_fsm_impl.h"
+#  include "peer/concurrency_control/coordinator.h"
+#  include "worker_fsm_impl.h"
+#  include "peer/db/db_interface.h"
+
+
 
 namespace peer::cc::crdt::mycrdt {
 
   class CrdtCoordinator : public Coordinator<crdtFSM, CrdtCoordinator> {
   public:
     bool init(const std::shared_ptr<peer::db::DBConnection>& dbc) {
-      this->dbc = dbc;
-      counters = std::make_shared<peer::crdt::chaincode::type::PNCounterList>();
-      auto dbShim = std::make_shared<peer::crdt::chaincode::DBShim>(dbc, counters);
+      auto dbShim = std::make_shared<peer::crdt::chaincode::DBShim>(dbc);
 
       for (auto& it : this->fsmList) {
         it->setDBShim(dbShim);
@@ -51,8 +50,6 @@ namespace peer::cc::crdt::mycrdt {
     }
 
     bool processSync(const auto& afterStart, const auto& afterCommit) {
-      counters->reset();
-
       auto ret = processParallel(InvokerCommand::START, ReceiverState::READY, afterStart);
       if (!ret) {
         LOG(ERROR) << "START failed";
@@ -63,19 +60,10 @@ namespace peer::cc::crdt::mycrdt {
         LOG(ERROR) << "EXEC failed";
         return false;
       }
-      // save counters to db
-      if (!counters->saveToDB(dbc)) {
-        LOG(ERROR) << "sync to db failed";
-        return false;
-      }
       return true;
     }
 
     CrdtCoordinator() = default;
-
-  private:
-    std::shared_ptr<peer::crdt::chaincode::type::PNCounterList> counters;
-    std::shared_ptr<db::DBConnection> dbc;
   };
 }
 

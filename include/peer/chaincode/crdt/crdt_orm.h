@@ -9,13 +9,11 @@
 #include "common/phmap.h"
 #include "zpp_bits.h"
 #include <functional>
-#include "peer/chaincode/crdt/pncounter.h"
 
 namespace peer::crdt::chaincode {
     class DBShim {
     public:
-        explicit DBShim(std::shared_ptr<db::DBConnection> db, std::shared_ptr<peer::crdt::chaincode::type::PNCounterList> counters_) : _db(std::move(db)), counters(std::move(counters_)) { }
-        explicit DBShim(std::shared_ptr<db::DBConnection> db) : _db(std::move(db)) {}
+        explicit DBShim(std::shared_ptr<db::DBConnection> db) : _db(std::move(db)) { }
 
         [[nodiscard]] inline bool get(const std::string& key, std::string& value) {
             std::shared_lock lock(mutexMap[key]);
@@ -40,25 +38,15 @@ namespace peer::crdt::chaincode {
             return _db->asyncPut(key, std::move(value));
         }
 
-        inline bool add(const std::string& key, int value) {
-          return counters->apply(type::Operator::ADD, key, value);
-        }
-
-        inline bool sub(const std::string& key, int value) {
-          return counters->apply(type::Operator::REDUCE, key, value);
-        }
-
         inline bool del(const std::string& key) {
             std::unique_lock lock(mutexMap[key]);
             return _db->asyncDelete(key);
         }
 
 
-
     private:
         std::shared_ptr<db::DBConnection> _db;
         util::MyNodeHashMap<std::string, std::shared_mutex, std::mutex> mutexMap;
-        std::shared_ptr<peer::crdt::chaincode::type::PNCounterList> counters;
     };
 
     class CrdtORM {
@@ -75,14 +63,6 @@ namespace peer::crdt::chaincode {
 
         inline bool del(const std::string& key) {
             return db->del(key);
-        }
-
-        inline bool add(const std::string& key, int value) {
-          return db->add(key, value);
-        }
-
-        inline bool sub(const std::string& key, int value) {
-          return db->sub(key, value);
         }
 
         // set the return string

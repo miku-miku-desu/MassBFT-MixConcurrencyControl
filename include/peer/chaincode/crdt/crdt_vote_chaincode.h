@@ -51,27 +51,24 @@ namespace peer::crdt::chaincode {
         }
 
         int Vote(const std::string& candidate, int count) {
-            // auto callback = [&](std::string& rawValue) {
-            //     int oldCount;
-            //     {
-            //         zpp::bits::in in(rawValue);
-            //         if (failure(in(oldCount))) {
-            //             return false;
-            //         }
-            //     }
-            //     {
-            //         zpp::bits::out out(rawValue);
-            //         if (failure(out(oldCount + count))) {
-            //             return false;
-            //         }
-            //     }
-            //     return true;
-            // };
-            // if (!orm->put(candidate, callback)) {
-            //     return -1;
-            // }
-            if (!orm->add(candidate, count)) {
-              return -1;
+            auto callback = [&](std::string& rawValue) {
+                int oldCount;
+                {
+                    zpp::bits::in in(rawValue);
+                    if (failure(in(oldCount))) {
+                        return false;
+                    }
+                }
+                {
+                    zpp::bits::out out(rawValue);
+                    if (failure(out(oldCount + count))) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+            if (!orm->put(candidate, callback)) {
+                return -1;
             }
             return 0;
         }
