@@ -45,7 +45,8 @@ namespace client::core {
                 auto randomMinorDelay = randGen->nextValue() % _txnTickNs;
                 std::this_thread::sleep_for(std::chrono::nanoseconds(randomMinorDelay));
             }
-            auto deadline = std::chrono::system_clock::now() + std::chrono::nanoseconds(_txnTickNs);
+            // auto deadline = std::chrono::system_clock::now() + std::chrono::nanoseconds(_txnTickNs);
+            auto deadline = std::chrono::steady_clock::now() + std::chrono::nanoseconds(_txnTickNs);
             // opCount == 0 inf ops
             while ((_txnCount == 0 || _txnDone < _txnCount) && !_workload->isStopRequested()) {
                 if (!_workload->doTransaction(_db.get())) {
